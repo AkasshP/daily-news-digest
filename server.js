@@ -1,10 +1,11 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: false }));
+// Twilio sends data as urlencoded
+app.use(express.urlencoded({ extended: false }));
 
+// WhatsApp webhook
 app.post("/whatsapp", (req, res) => {
 
     const incomingMsg = req.body.Body;
@@ -20,13 +21,16 @@ app.post("/whatsapp", (req, res) => {
 <Message>${reply}</Message>
 </Response>
 `);
-
 });
 
+// health check route
 app.get("/", (req, res) => {
     res.send("Server is alive");
 });
 
-app.listen(process.env.PORT || 3000, () => {
-    console.log("Server running");
+// IMPORTANT: Railway requires listening on 0.0.0.0
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on port ${PORT}`);
 });
